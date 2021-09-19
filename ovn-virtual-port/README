@@ -1,0 +1,23 @@
+this script will create two ovn virtual ports one with vip ipv4 and the second with 
+ipv6.
+
+the two ports will be created and with link status down and chassis column will 
+be empty.
+
+in order to bind those ports to VIF ports you must send ARP/ND packet with the
+VIP as target from one of the  VIF (use scapy for ARP).
+	
+      From the VIF parent port continer/vm run scapy and send on of the following pkt:
+
+	""" send(ARP(op=1, psrc=vip, pdst=vip)) """
+	""" send(ARP(op=2, psrc=vip, pdst=anyip)) """
+
+This will bind the virtual port to the the VIF chassis and apply all the ovs
+lflows belongs to the vrtual port on the chassis Datapath.
+
+
+For IPV6 port binding use scapy with ICMPv6:
+
+	"""scapy"""
+		from scapy.layers.inet6 import *
+		neighsol('2001:db8::f816:3eff:fe9b:61d1', '1000::3', 'sw0p1')
